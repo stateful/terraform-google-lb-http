@@ -88,7 +88,7 @@ variable "backends" {
       })
 
       cache_mode        = string
-      serve_while_stale = bool
+      serve_while_stale = number
     })
 
     log_config = object({

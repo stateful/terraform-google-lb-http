@@ -231,10 +231,13 @@ resource "google_compute_backend_service" "default" {
       max_ttl                      = lookup(lookup(each.value, "cdn_config", {}), "max_ttl", null)
       client_ttl                   = lookup(lookup(each.value, "cdn_config", {}), "client_ttl", null)
 
-      negative_caching = lookup(lookup(each.value, "cdn_config", {}), "negative_caching", null)
-      negative_caching_policy {
-        code = lookup(lookup(lookup(each.value, "cdn_config", {}), "negative_caching_policy", {}), "code", null)
-        ttl  = lookup(lookup(lookup(each.value, "cdn_config", {}), "negative_caching_policy", {}), "ttl", null)
+      negative_caching = lookup(lookup(each.value, "cdn_config", {}), "negative_caching", false)
+      dynamic "negative_caching_policy" {
+        for_each = lookup(lookup(each.value, "cdn_config", {}), "negative_caching", false) ? [1] : []
+        content {
+          code = lookup(lookup(lookup(each.value, "cdn_config", {}), "negative_caching_policy", {}), "code", null)
+          ttl  = lookup(lookup(lookup(each.value, "cdn_config", {}), "negative_caching_policy", {}), "ttl", null)
+        }
       }
 
       cache_mode        = lookup(lookup(each.value, "cdn_config", {}), "cache_mode", null)
